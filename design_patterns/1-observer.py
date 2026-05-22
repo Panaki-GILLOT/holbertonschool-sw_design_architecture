@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-from typing import Protocol, Optional, Set, Dict
+from typing import Protocol
 
 
 class Observer(Protocol):
-    def update(self, topic: str, data: str) -> None: ...
+    def update(self, topic: str, data: str) -> None:
+        ...
 
 
 class NewsSubject:
     def __init__(self) -> None:
-        self._subs: Dict[Observer, Optional[Set[str]]] = {}
+        self._subs: dict[
+            Observer,
+            set[str] | None
+        ] = {}
 
-    def subscribe(self, observer: Observer, topics: Set[str] | None = None) -> None:
+    def subscribe(self, observer: Observer,
+                  topics: set[str] | None = None) -> None:
         if observer in self._subs:
             return
         self._subs[observer] = topics
@@ -28,17 +33,17 @@ class NewsSubject:
 
 class LogObserver:
     def update(self, topic: str, data: str) -> None:
-        print("log:" + topic + "=" + data)
+        print(f"log:{topic}={data}")
 
 
 class EmailObserver:
     def update(self, topic: str, data: str) -> None:
-        print("email:" + topic + "=" + data)
+        print(f"email:{topic}={data}")
 
 
 class SmsObserver:
     def update(self, topic: str, data: str) -> None:
-        print("sms:" + topic + "=" + data)
+        print(f"sms:{topic}={data}")
 
 
 def main() -> None:
@@ -46,11 +51,10 @@ def main() -> None:
 
     log = LogObserver()
     email = EmailObserver()
+    sms = SmsObserver()
 
     subject.subscribe(log, topics={"sports", "breaking"})
     subject.subscribe(email)
-
-    sms = SmsObserver()
     subject.subscribe(sms, topics={"breaking"})
 
     subject.notify("weather", "rain")
