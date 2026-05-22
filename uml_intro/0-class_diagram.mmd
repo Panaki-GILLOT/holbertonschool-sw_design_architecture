@@ -1,0 +1,92 @@
+classDiagram
+
+class User {
+    +int user_id
+    +str name
+    +str email
+    +str password
+    +str address
+
+    +register()
+    +login()
+    +update_profile()
+}
+
+class Product {
+    +int product_id
+    +str name
+    +str description
+    +float price
+    +list[str] size
+    +int stock
+    +str image_url
+
+    +update_stock()
+    +is_available()
+}
+
+class Cart {
+    +int cart_id
+    +int user_id
+    +list[CartItem] items
+
+    +add_item()
+    +remove_item()
+    +calculate_total()
+    +clear_cart()
+}
+
+class CartItem {
+    +int product_id
+    +int quantity
+    +float price
+
+    +update_quantity()
+}
+
+class Order {
+    +int order_id
+    +int user_id
+    +float total_price
+    +str status
+    +str created_at
+
+    +create_order()
+    +update_status()
+    +cancel_order()
+}
+
+class Payment {
+    +int payment_id
+    +int order_id
+    +str method
+    +str status
+    +float amount
+
+    +process_payment()
+    +validate_payment()
+}
+
+class Admin {
+    +int admin_id
+    +str name
+    +str email
+
+    +add_product()
+    +remove_product()
+    +update_product()
+    +view_orders()
+}
+
+%% RELATIONSHIPS
+
+User "1" --> "1" Cart
+User "1" --> "0..*" Order
+
+Cart "1" --> "0..*" CartItem
+CartItem "0..*" --> "1" Product
+
+Order "1" --> "1" Payment
+
+Admin ..> Product : manages
+Admin ..> Order : manages
