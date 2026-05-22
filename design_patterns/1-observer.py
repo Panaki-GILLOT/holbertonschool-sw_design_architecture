@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-from typing import Protocol
+from typing import Protocol, Optional, Set, Dict
 
 
 class Observer(Protocol):
@@ -9,11 +9,11 @@ class Observer(Protocol):
 
 class NewsSubject:
     def __init__(self) -> None:
-        self._subs: dict[Observer, set[str] | None] = {}
+        self._subs: Dict[Observer, Optional[Set[str]]] = {}
 
-    def subscribe(self, observer: Observer, topics: set[str] | None = None) -> None:
+    def subscribe(self, observer: Observer, topics: Set[str] | None = None) -> None:
         if observer in self._subs:
-            return  # ignore duplicate subscribe for same instance
+            return
         self._subs[observer] = topics
 
     def unsubscribe(self, observer: Observer) -> None:
@@ -28,18 +28,17 @@ class NewsSubject:
 
 class LogObserver:
     def update(self, topic: str, data: str) -> None:
-        print(f"log:{topic}={data}")
+        print("log:" + topic + "=" + data)
 
 
 class EmailObserver:
     def update(self, topic: str, data: str) -> None:
-        print(f"email:{topic}={data}")
+        print("email:" + topic + "=" + data)
 
 
-# ✅ AJOUT 1 : SmsObserver
 class SmsObserver:
     def update(self, topic: str, data: str) -> None:
-        print(f"sms:{topic}={data}")
+        print("sms:" + topic + "=" + data)
 
 
 def main() -> None:
@@ -49,9 +48,8 @@ def main() -> None:
     email = EmailObserver()
 
     subject.subscribe(log, topics={"sports", "breaking"})
-    subject.subscribe(email)  # None = receives all topics
+    subject.subscribe(email)
 
-    # ✅ AJOUT 2 : SMS observer
     sms = SmsObserver()
     subject.subscribe(sms, topics={"breaking"})
 
